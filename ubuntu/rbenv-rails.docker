@@ -1,0 +1,29 @@
+FROM ubuntu:precise
+MAINTAINER makemymeals
+
+RUN apt-get update
+
+# rails needs readline package
+RUN apt-get -y install build-essential git libssl-dev curl libreadline-dev
+
+RUN git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv
+
+RUN mkdir /usr/local/rbenv/plugins
+RUN git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build
+
+ENV RBENV_ROOT /usr/local/rbenv
+ENV PATH /usr/local/rbenv/shims:/usr/local/rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN rbenv install 2.0.0-p247
+
+ENV RBENV_VERSION 2.0.0-p247
+
+RUN rbenv rehash
+
+# Updating rubygems
+RUN gem install rubygems-update --no-ri --no-rdoc
+RUN update_rubygems
+RUN gem update --system
+
+# bundler
+RUN gem install bundler --no-ri --no-rdoc
